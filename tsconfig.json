@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["es2023"],
-    "target": "es2022",
+    "target": "es2020",
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,

@@ -1,6 +1,6 @@
 {
   "name": "strapi-provider-cloudflare-r2-aws",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Strapi Cloudflare R2+CDN provider for strapi upload using AWS SDK v3",
   "strapi": {
     "name": "strapi-provider-cloudflare-r2-aws",
@@ -32,7 +32,10 @@
   "scripts": {
     "test": "vitest",
     "semantic-release": "semantic-release",
-    "build": "tsc"
+    "build": "npm-run-all --parallel build:code build:types",
+    "build:code": "rollup -c",
+    "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "clean": "rimraf dist"
   },
   "release": {
     "branches": [
@@ -59,11 +62,19 @@
   },
   "devDependencies": {
     "@aws-sdk/types": "^3.840.0",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-dynamic-import-vars": "^2.1.5",
+    "@rollup/plugin-image": "^3.0.3",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-swc": "^0.4.0",
     "@types/node": "^24.1.0",
+    "npm-run-all": "^4.1.5",
+    "rollup": "^4.46.2",
+    "rollup-plugin-html": "^0.2.1",
     "semantic-release": "^21.0.7",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4",
-    "npm-run-all": "^4.1.5"
+    "vitest": "^3.2.4"
   },
   "types": "./dist/index.d.ts",
   "files": [

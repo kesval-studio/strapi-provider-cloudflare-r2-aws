@@ -1,7 +1,5 @@
-'use strict';
-
-var clientS3 = require('@aws-sdk/client-s3');
-var libStorage = require('@aws-sdk/lib-storage');
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 
 const removeLeadingSlash = (path)=>{
     return path.replace(/^\//, "");
@@ -20,7 +18,7 @@ const getPathKey = (file, pool = false)=>{
 };
 var index = {
     init ({ params, credentials, endpoint, cloudflarePublicAccessUrl, pool, region }) {
-        const S3 = new clientS3.S3Client({
+        const S3 = new S3Client({
             region: region || "auto",
             endpoint: endpoint,
             credentials: credentials
@@ -30,7 +28,7 @@ var index = {
         }
         const upload = async (file, customParams)=>{
             const { Key } = getPathKey(file, pool);
-            const command = new libStorage.Upload({
+            const command = new Upload({
                 client: S3,
                 params: {
                     Bucket: params?.Bucket,
@@ -63,7 +61,7 @@ var index = {
             },
             async delete (file, customParams = {}) {
                 const { Key } = getPathKey(file, pool);
-                const command = new clientS3.DeleteObjectCommand({
+                const command = new DeleteObjectCommand({
                     Bucket: params?.Bucket,
                     Key: Key,
                     ...customParams
@@ -74,5 +72,5 @@ var index = {
     }
 };
 
-module.exports = index;
-//# sourceMappingURL=index.js.map
+export { index as default };
+//# sourceMappingURL=index.mjs.map
