@@ -34,7 +34,7 @@
     }
   ],
   "scripts": {
-    "test": "echo \"no tests yet\"",
+    "test": "vitest",
     "semantic-release": "semantic-release"
   },
   "release": {
@@ -46,8 +46,8 @@
     "access": "public"
   },
   "dependencies": {
-    "aws-sdk": "2.1287.0",
-    "lodash": "4.17.21"
+    "@aws-sdk/client-s3": "^3.857.0",
+    "@aws-sdk/lib-storage": "^3.857.0"
   },
   "peerDependencies": {
     "@strapi/strapi": ">=5.0.0"
@@ -58,9 +58,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/trieb-work/strapi-provider-cloudflare-r2.git"
+    "url": "https://github.com/kesval-studio/strapi-provider-cloudflare-r2-aws.git"
   },
   "devDependencies": {
-    "semantic-release": "^21.0.7"
+    "@aws-sdk/types": "^3.840.0",
+    "@types/node": "^24.1.0",
+    "semantic-release": "^21.0.7",
+    "vitest": "^3.2.4"
   }
 }
