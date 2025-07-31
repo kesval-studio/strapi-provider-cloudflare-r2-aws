@@ -1,10 +1,10 @@
 {
-  "name": "strapi-provider-cloudflare-r2",
-  "version": "0.0.0-development",
-  "description": "Strapi Cloudflare R2+CDN provider for strapi upload",
+  "name": "strapi-provider-cloudflare-r2-aws",
+  "version": "0.0.1",
+  "description": "Strapi Cloudflare R2+CDN provider for strapi upload using AWS SDK v3",
   "strapi": {
-    "name": "strapi-provider-cloudflare-r2",
-    "description": "Use Cloudflare R2 in combination with the Cloudflare CDN as your upload provider",
+    "name": "strapi-provider-cloudflare-r2-aws",
+    "description": "Use Cloudflare R2 in combination with the Cloudflare CDN as your upload provider using AWS SDK v3",
     "kind": "provider"
   },
   "keywords": [
@@ -17,20 +17,20 @@
     "aws",
     "s3"
   ],
-  "homepage": "https://github.com/trieb-work/strapi-provider-cloudflare-r2 ",
+  "homepage": "https://github.com/kesval-studio/strapi-provider-cloudflare-r2-aws",
   "license": "SEE LICENSE IN LICENSE",
   "main": "./lib",
   "directories": {
     "lib": "./lib"
   },
   "author": {
-    "name": "Tilman Marquart | trieb.work",
-    "url": "https://trieb.work"
+    "name": "KesvaL Studio",
+    "url": "https://kesval.com"
   },
   "maintainers": [
     {
-      "name": "trieb.work",
-      "url": "https://trieb.work"
+      "name": "KesvaL Studio",
+      "url": "https://kesval.com"
     }
   ],
   "scripts": {
@@ -50,7 +50,7 @@
     "lodash": "4.17.21"
   },
   "peerDependencies": {
-    "@strapi/strapi": ">=4.0.0"
+    "@strapi/strapi": ">=5.0.0"
   },
   "engines": {
     "node": ">=14.19.1",

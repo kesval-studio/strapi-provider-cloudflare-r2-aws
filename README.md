@@ -1,5 +1,7 @@
 [![npm version](https://badge.fury.io/js/strapi-provider-cloudflare-r2.svg)](https://badge.fury.io/js/strapi-provider-cloudflare-r2)
 
+Note: this is a fork of `strapi-provider-cloudflare-r2` that is updated to use AWS SDK v3 and Strapi v5.
+
 # strapi-provider-cloudflare-r2
 
 ## Installation
@@ -96,14 +98,18 @@ module.exports = ({ env }) => [
             "data:",
             "blob:",
             "market-assets.strapi.io",
-            env("CF_PUBLIC_ACCESS_URL") ? env("CF_PUBLIC_ACCESS_URL").replace(/^https?:\/\//, "") : "",
+            env("CF_PUBLIC_ACCESS_URL")
+              ? env("CF_PUBLIC_ACCESS_URL").replace(/^https?:\/\//, "")
+              : "",
           ],
           "media-src": [
             "'self'",
             "data:",
             "blob:",
             "market-assets.strapi.io",
-            env("CF_PUBLIC_ACCESS_URL") ? env("CF_PUBLIC_ACCESS_URL").replace(/^https?:\/\//, "") : "",
+            env("CF_PUBLIC_ACCESS_URL")
+              ? env("CF_PUBLIC_ACCESS_URL").replace(/^https?:\/\//, "")
+              : "",
           ],
           upgradeInsecureRequests: null,
         },
@@ -143,7 +149,6 @@ More safe would be to only allow it from your Strapi deployment Origins (**bette
   }
 ]
 ```
-
 
 ## Sponsors
 

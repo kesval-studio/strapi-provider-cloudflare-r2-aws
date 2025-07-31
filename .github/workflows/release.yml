@@ -23,13 +23,13 @@ jobs:
           fetch-depth: 0
       - uses: pnpm/action-setup@v2
         with:
-           version: 8.6.1   
+          version: 10.13.1
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "lts/*"
           cache: "pnpm"
-       
+
       - name: Install dependencies
         run: pnpm i
 
