@@ -1,6 +1,6 @@
 {
   "name": "strapi-provider-cloudflare-r2-aws",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Strapi Cloudflare R2+CDN provider for strapi upload using AWS SDK v3",
   "strapi": {
     "name": "strapi-provider-cloudflare-r2-aws",
