@@ -1,20 +1,17 @@
-[![npm version](https://badge.fury.io/js/strapi-provider-cloudflare-r2.svg)](https://badge.fury.io/js/strapi-provider-cloudflare-r2)
+[![npm version](https://badge.fury.io/js/strapi-provider-cloudflare-r2-aws.svg)](https://badge.fury.io/js/strapi-provider-cloudflare-r2-aws)
 
 Note: this is a fork of `strapi-provider-cloudflare-r2` that is updated to use AWS SDK v3 and Strapi v5.
 
-# strapi-provider-cloudflare-r2
+# strapi-provider-cloudflare-r2-aws
 
 ## Installation
 
 ```bash
-# using yarn
-yarn add strapi-provider-cloudflare-r2
+# using pnpm (recommended)
+pnpm add strapi-provider-cloudflare-r2-aws
 
 # using npm
-npm install strapi-provider-cloudflare-r2 --save
-
-# using pnpm
-pnpm add strapi-provider-cloudflare-r2
+npm install strapi-provider-cloudflare-r2-aws --save
 ```
 
 ## Configuration
@@ -34,10 +31,12 @@ module.exports = ({ env }) => ({
   // ...
   upload: {
     config: {
-      provider: "strapi-provider-cloudflare-r2",
+      provider: "strapi-provider-cloudflare-r2-aws",
       providerOptions: {
-        accessKeyId: env("CF_ACCESS_KEY_ID"),
-        secretAccessKey: env("CF_ACCESS_SECRET"),
+        credentials: {
+          accessKeyId: env("CF_ACCESS_KEY_ID"),
+          secretAccessKey: env("CF_ACCESS_SECRET"),
+        },
         /**
          * `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`
          */
@@ -120,10 +119,6 @@ module.exports = ({ env }) => [
 ];
 ```
 
-### `aws-sdk` configuration and `AWS_...` env variables
-
-As the Clouflare R2 spec follows the AWS S3 spec we make use of `aws-sdk` package to communicate with Cloudflare R2. Because of this dependency all `AWS_...` env variables used to configure the `aws-sdk` are still beeing pulled in by this dependency. If you do not want to configure any special functionality of the `aws-sdk` then make sure to remove all `AWS_...` env variables in you deployment.
-
 ## Bucket CORS Configuration
 
 Do not forget to configure your R2 Endpoint CORS settings as described here: https://developers.cloudflare.com/r2/buckets/cors/
@@ -152,4 +147,4 @@ More safe would be to only allow it from your Strapi deployment Origins (**bette
 
 ## Sponsors
 
-[Strapi Plugin developed and maintained by trieb.work cloud consulting](https://trieb.work/)
+[Strapi Plugin developed and maintained by KesvaL Studio](https://kesval.com/)
