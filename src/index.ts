@@ -41,7 +41,7 @@ export type InitOptions = {
 	region?: string;
 
 	cloudflarePublicAccessUrl?: string;
-	pool?: false;
+	pool?: boolean;
 };
 
 type InitResult = {
