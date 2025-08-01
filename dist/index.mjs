@@ -1,15 +1,11 @@
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 
-const removeLeadingSlash = (path)=>{
-    return path.replace(/^\//, "");
-};
 const getPathKey = (file, pool = false)=>{
     const filePath = file.path ? `${file.path}/` : "";
-    let path = filePath;
-    if (!pool) {
-        path = file.path && file.path !== "/" ? `${removeLeadingSlash(file.path)}/${filePath}` : filePath;
-    }
+    // Note: pool parameter is kept for backward compatibility but no longer affects behavior
+    // Previously, pool=false had incorrect path duplication logic which has been fixed
+    const path = filePath;
     const Key = `${path}${file.hash}${file.ext}`;
     return {
         path,
