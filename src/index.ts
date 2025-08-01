@@ -59,19 +59,11 @@ type InitResult = {
 	): Promise<DeleteObjectCommandOutput>;
 };
 
-const removeLeadingSlash = (path: string) => {
-	return path.replace(/^\//, "");
-};
-
 const getPathKey = (file: File, pool = false) => {
 	const filePath = file.path ? `${file.path}/` : "";
-	let path = filePath;
-	if (!pool) {
-		path =
-			file.path && file.path !== "/"
-				? `${removeLeadingSlash(file.path)}/${filePath}`
-				: filePath;
-	}
+	// Note: pool parameter is kept for backward compatibility but no longer affects behavior
+	// Previously, pool=false had incorrect path duplication logic which has been fixed
+	const path = filePath;
 
 	const Key = `${path}${file.hash}${file.ext}`;
 	return { path, Key };
