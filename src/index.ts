@@ -41,7 +41,6 @@ export type InitOptions = {
 	region?: string;
 
 	cloudflarePublicAccessUrl?: string;
-	pool?: boolean;
 };
 
 type InitResult = {
@@ -59,19 +58,9 @@ type InitResult = {
 	): Promise<DeleteObjectCommandOutput>;
 };
 
-const removeLeadingSlash = (path: string) => {
-	return path.replace(/^\//, "");
-};
-
-const getPathKey = (file: File, pool = false) => {
+const getPathKey = (file: File) => {
 	const filePath = file.path ? `${file.path}/` : "";
-	let path = filePath;
-	if (!pool) {
-		path =
-			file.path && file.path !== "/"
-				? `${removeLeadingSlash(file.path)}/${filePath}`
-				: filePath;
-	}
+	const path = filePath;
 
 	const Key = `${path}${file.hash}${file.ext}`;
 	return { path, Key };
@@ -83,7 +72,6 @@ export default {
 		credentials,
 		endpoint,
 		cloudflarePublicAccessUrl,
-		pool,
 		region,
 	}: InitOptions): InitResult {
 		const S3 = new S3Client({
@@ -99,7 +87,7 @@ export default {
 		}
 
 		const upload: InitResult["upload"] = async (file, customParams) => {
-			const { Key } = getPathKey(file, pool);
+			const { Key } = getPathKey(file);
 
 			const command = new Upload({
 				client: S3,
@@ -143,7 +131,7 @@ export default {
 				return upload(file, customParams);
 			},
 			async delete(file, customParams = {}) {
-				const { Key } = getPathKey(file, pool);
+				const { Key } = getPathKey(file);
 
 				const command = new DeleteObjectCommand({
 					Bucket: params?.Bucket,
