@@ -41,7 +41,6 @@ export type InitOptions = {
 	region?: string;
 
 	cloudflarePublicAccessUrl?: string;
-	pool?: boolean;
 };
 
 type InitResult = {
@@ -59,10 +58,8 @@ type InitResult = {
 	): Promise<DeleteObjectCommandOutput>;
 };
 
-const getPathKey = (file: File, pool = false) => {
+const getPathKey = (file: File) => {
 	const filePath = file.path ? `${file.path}/` : "";
-	// Note: pool parameter is kept for backward compatibility but no longer affects behavior
-	// Previously, pool=false had incorrect path duplication logic which has been fixed
 	const path = filePath;
 
 	const Key = `${path}${file.hash}${file.ext}`;
@@ -75,7 +72,6 @@ export default {
 		credentials,
 		endpoint,
 		cloudflarePublicAccessUrl,
-		pool,
 		region,
 	}: InitOptions): InitResult {
 		const S3 = new S3Client({
@@ -91,7 +87,7 @@ export default {
 		}
 
 		const upload: InitResult["upload"] = async (file, customParams) => {
-			const { Key } = getPathKey(file, pool);
+			const { Key } = getPathKey(file);
 
 			const command = new Upload({
 				client: S3,
@@ -135,7 +131,7 @@ export default {
 				return upload(file, customParams);
 			},
 			async delete(file, customParams = {}) {
-				const { Key } = getPathKey(file, pool);
+				const { Key } = getPathKey(file);
 
 				const command = new DeleteObjectCommand({
 					Bucket: params?.Bucket,

@@ -78,10 +78,9 @@ describe("Cloudflare R2 AWS Provider", () => {
 			expect(file.url).toEqual("https://cdn.test/tmp/test/test.json");
 		});
 
-		test("Should work correctly when pool=false (default)", async () => {
+		test("Should work correctly for all file paths", async () => {
 			const providerInstance = awsProvider.init({
 				cloudflarePublicAccessUrl: "https://cdn.test",
-				pool: false, // explicitly set to false (this is the default)
 				params: {
 					Bucket: "test",
 				},
@@ -102,34 +101,7 @@ describe("Cloudflare R2 AWS Provider", () => {
 
 			expect(uploadMock.done).toBeCalled();
 			expect(file.url).toBeDefined();
-			// Should NOT duplicate the path - should be "uploads/test.jpg", not "uploads/uploads/test.jpg"
-			expect(file.url).toEqual("https://cdn.test/uploads/test.jpg");
-		});
-
-		test("Should work correctly when pool=true", async () => {
-			const providerInstance = awsProvider.init({
-				cloudflarePublicAccessUrl: "https://cdn.test",
-				pool: true,
-				params: {
-					Bucket: "test",
-				},
-			});
-
-			const file: Partial<File> = {
-				name: "test",
-				size: 100,
-				url: "",
-				path: "uploads",
-				hash: "test",
-				ext: ".jpg",
-				mime: "image/jpeg",
-				buffer: Buffer.from(""),
-			};
-
-			await providerInstance.upload(file as File);
-
-			expect(uploadMock.done).toBeCalled();
-			expect(file.url).toBeDefined();
+			// Should produce correct path structure
 			expect(file.url).toEqual("https://cdn.test/uploads/test.jpg");
 		});
 	});
