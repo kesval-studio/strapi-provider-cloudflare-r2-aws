@@ -103,11 +103,8 @@ export default {
 
 			const uploaded = await command.done();
 
-			const key =
-				uploaded.Location === "auto" &&
-				uploaded.Key?.startsWith(`${params?.Bucket}/`)
-					? uploaded.Key.replace(`${params?.Bucket}/`, "")
-					: uploaded.Key;
+			// Always use the originally computed Key to avoid accidental bucket duplication
+			const key = Key;
 
 			// Set the bucket file URL.
 			// If there is a custom endpoint for data access set, replace the upload endpoint with the read enpoint URL.

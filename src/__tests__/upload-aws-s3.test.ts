@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import awsProvider, { File } from "../index";
+import awsProvider, { type File } from "../index";
 
 const uploadMock = {
 	done: vi.fn(),
@@ -103,6 +103,40 @@ describe("Cloudflare R2 AWS Provider", () => {
 			expect(file.url).toBeDefined();
 			// Should produce correct path structure
 			expect(file.url).toEqual("https://cdn.test/uploads/test.jpg");
+		});
+
+		test("Should not duplicate bucket name in URL when SDK returns bucket-prefixed Key and auto location", async () => {
+			const providerInstance = awsProvider.init({
+				cloudflarePublicAccessUrl: "https://cdn.test",
+				params: {
+					Bucket: "my-bucket",
+				},
+			});
+
+			const file: Partial<File> = {
+				name: "test",
+				size: 100,
+				url: "",
+				path: "assets",
+				hash: "filehash",
+				ext: ".png",
+				mime: "image/png",
+				buffer: Buffer.from(""),
+			};
+
+			// Simulate SDK returning bucket-prefixed Key and auto location
+			uploadMock.done.mockResolvedValueOnce({
+				Location: "auto",
+				$metadata: {},
+				Key: `my-bucket/assets/filehash.png`,
+			});
+
+			await providerInstance.upload(file as File);
+
+			expect(uploadMock.done).toBeCalled();
+			expect(file.url).toBeDefined();
+			// Must not include duplicated bucket name
+			expect(file.url).toEqual("https://cdn.test/assets/filehash.png");
 		});
 	});
 });
