@@ -60,10 +60,9 @@ type InitResult = {
 
 const getPathKey = (file: File) => {
 	const filePath = file.path ? `${file.path}/` : "";
-	const path = filePath;
 
-	const Key = `${path}${file.hash}${file.ext}`;
-	return { path, Key };
+	const Key = `${filePath}${file.hash}${file.ext}`;
+	return { path: filePath, Key };
 };
 
 export default {
@@ -103,16 +102,11 @@ export default {
 
 			const uploaded = await command.done();
 
-			// Always use the originally computed Key to avoid accidental bucket duplication
-			const key = uploaded.Key?.startsWith(`${params?.Bucket}/`)
-				? uploaded.Key.replace(`${params?.Bucket}/`, "")
-				: uploaded.Key;
-
 			// Set the bucket file URL.
 			// If there is a custom endpoint for data access set, replace the upload endpoint with the read enpoint URL.
 			// Otherwise, use location returned from S3 API if it's not "auto"
 			if (cloudflarePublicAccessUrl) {
-				file.url = `${cloudflarePublicAccessUrl.replace(/\/$/g, "")}/${key}`;
+				file.url = `${cloudflarePublicAccessUrl.replace(/\/$/g, "")}/${uploaded.Key}`;
 			} else if (uploaded.Location !== "auto") {
 				file.url = uploaded.Location as string;
 			} else {
