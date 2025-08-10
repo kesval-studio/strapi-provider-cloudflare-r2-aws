@@ -8,7 +8,6 @@ import {
 import type { ReadStream } from "node:fs";
 import { Upload } from "@aws-sdk/lib-storage";
 import type { AwsCredentialIdentity } from "@aws-sdk/types";
-
 export interface File {
 	name: string;
 	alternativeText?: string;
@@ -58,8 +57,9 @@ type InitResult = {
 	): Promise<DeleteObjectCommandOutput>;
 };
 
-const getPathKey = (file: File) => {
-	return { Key: `${file.hash}${file.ext}` };
+const getFileKey = (file: File) => {
+	const path = file.path ? `${file.path}/` : "";
+	return `${path}${file.hash}${file.ext}`;
 };
 
 export default {
@@ -83,7 +83,7 @@ export default {
 		}
 
 		const upload: InitResult["upload"] = async (file, customParams) => {
-			const { Key } = getPathKey(file);
+			const Key = getFileKey(file);
 
 			const command = new Upload({
 				client: S3,
@@ -103,7 +103,7 @@ export default {
 			// If there is a custom endpoint for data access set, replace the upload endpoint with the read enpoint URL.
 			// Otherwise, use location returned from S3 API if it's not "auto"
 			if (cloudflarePublicAccessUrl) {
-				file.url = `${cloudflarePublicAccessUrl.replace(/\/$/g, "")}/${uploaded.Key}`;
+				file.url = `${cloudflarePublicAccessUrl.replace(/\/$/g, "")}/${Key}`;
 			} else if (uploaded.Location !== "auto") {
 				file.url = uploaded.Location as string;
 			} else {
@@ -121,7 +121,7 @@ export default {
 				return upload(file, customParams);
 			},
 			async delete(file, customParams = {}) {
-				const { Key } = getPathKey(file);
+				const Key = getFileKey(file);
 
 				const command = new DeleteObjectCommand({
 					Bucket: params?.Bucket,
