@@ -59,10 +59,7 @@ type InitResult = {
 };
 
 const getPathKey = (file: File) => {
-	const filePath = file.path ? `${file.path}/` : "";
-
-	const Key = `${filePath}${file.hash}${file.ext}`;
-	return { path: filePath, Key };
+	return { Key: `${file.hash}${file.ext}` };
 };
 
 export default {

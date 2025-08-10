@@ -48,7 +48,7 @@ describe("Cloudflare R2 AWS Provider", () => {
 
 			expect(uploadMock.done).toBeCalled();
 			expect(file.url).toBeDefined();
-			expect(file.url).toEqual("https://validurl.test/tmp/test.json");
+			expect(file.url).toEqual("https://validurl.test/test.json");
 		});
 
 		test("Public url should be prepended to the url of the file object", async () => {
@@ -75,7 +75,7 @@ describe("Cloudflare R2 AWS Provider", () => {
 
 			expect(uploadMock.done).toBeCalled();
 			expect(file.url).toBeDefined();
-			expect(file.url).toEqual("https://cdn.test/tmp/test/test.json");
+			expect(file.url).toEqual("https://cdn.test/test.json");
 		});
 
 		test("Should work correctly for all file paths", async () => {
@@ -102,7 +102,7 @@ describe("Cloudflare R2 AWS Provider", () => {
 			expect(uploadMock.done).toBeCalled();
 			expect(file.url).toBeDefined();
 			// Should produce correct path structure
-			expect(file.url).toEqual("https://cdn.test/uploads/test.jpg");
+			expect(file.url).toEqual("https://cdn.test/test.jpg");
 		});
 	});
 });
