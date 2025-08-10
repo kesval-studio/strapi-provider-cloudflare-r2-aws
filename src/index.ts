@@ -1,12 +1,12 @@
 import {
 	S3Client,
 	DeleteObjectCommand,
+	PutObjectCommand,
 	type DeleteObjectCommandOutput,
 	type PutObjectCommandInput,
 	type DeleteBucketCommandInput,
 } from "@aws-sdk/client-s3";
 import type { ReadStream } from "node:fs";
-import { Upload } from "@aws-sdk/lib-storage";
 import type { AwsCredentialIdentity } from "@aws-sdk/types";
 export interface File {
 	name: string;
@@ -92,32 +92,26 @@ export default {
 
 			debug(`Uploading file with key "${Key}"`, file);
 
-			const command = new Upload({
-				client: S3,
-				params: {
-					Bucket: params?.Bucket,
-					Key: Key,
-					// biome-ignore lint/suspicious/noExplicitAny: comes from official strapi s3 provider
-					Body: file.stream || Buffer.from(file.buffer as any, "binary"),
-					ContentType: file.mime,
-					...customParams,
-				},
+			const command = new PutObjectCommand({
+				Bucket: params?.Bucket,
+				Key: Key,
+				// biome-ignore lint/suspicious/noExplicitAny: comes from official strapi s3 provider
+				Body: file.stream || Buffer.from(file.buffer as any, "binary"),
+				ContentType: file.mime,
+				...customParams,
 			});
 
-			const uploaded = await command.done();
+			await S3.send(command);
 
 			// Set the bucket file URL.
 			// If there is a custom endpoint for data access set, replace the upload endpoint with the read enpoint URL.
-			// Otherwise, use location returned from S3 API if it's not "auto"
+			// Otherwise, we cannot reliably infer a public URL from the S3 PutObject response
 			if (cloudflarePublicAccessUrl) {
 				file.url = `${cloudflarePublicAccessUrl.replace(/\/$/g, "")}/${Key}`;
 				debug(`Uploaded file to "${file.url}"`, file);
-			} else if (uploaded.Location !== "auto") {
-				file.url = uploaded.Location as string;
-				debug(`Uploaded file to "${file.url}"`, file);
 			} else {
 				throw new Error(
-					"Cloudflare S3 API returned no file location and cloudflarePublicAccessUrl is not set. strapi-provider-cloudflare-r2-aws requires cloudflarePublicAccessUrl to upload files larger than 5MB. https://github.com/trieb-work/strapi-provider-cloudflare-r2#provider-configuration",
+					"Cloudflare S3 API returned no file location and cloudflarePublicAccessUrl is not set. strapi-provider-cloudflare-r2-aws requires cloudflarePublicAccessUrl to set a public URL. https://github.com/trieb-work/strapi-provider-cloudflare-r2#provider-configuration",
 				);
 			}
 		};

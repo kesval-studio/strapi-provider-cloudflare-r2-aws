@@ -1,22 +1,21 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import awsProvider, { type File } from "../index";
 
-const uploadMock = {
-	done: vi.fn(),
-};
+// Mock S3 client and commands
+const s3SendMock = vi.hoisted(() => vi.fn());
 
-vi.mock("@aws-sdk/lib-storage", () => {
+vi.mock("@aws-sdk/client-s3", () => {
+	s3SendMock.mockResolvedValue({});
 	return {
-		Upload: vi.fn().mockImplementation((config) => {
-			// Extract the Key from the params to return it in the mock response
-			const key = config.params.Key;
-			uploadMock.done.mockResolvedValue({
-				Location: `https://validurl.test/${key}`,
-				$metadata: {},
-				Key: key,
-			});
-			return uploadMock;
-		}),
+		S3Client: vi.fn().mockImplementation(() => ({
+			send: s3SendMock,
+		})),
+		PutObjectCommand: vi
+			.fn()
+			.mockImplementation((params) => ({ input: params })),
+		DeleteObjectCommand: vi
+			.fn()
+			.mockImplementation((params) => ({ input: params })),
 	};
 });
 
@@ -26,8 +25,9 @@ describe("Cloudflare R2 AWS Provider", () => {
 	});
 
 	describe("upload", () => {
-		test("Should add url to file object", async () => {
+		test("Should add url to file object when public URL is provided", async () => {
 			const providerInstance = awsProvider.init({
+				cloudflarePublicAccessUrl: "https://validurl.test",
 				params: {
 					Bucket: "test",
 				},
@@ -46,7 +46,7 @@ describe("Cloudflare R2 AWS Provider", () => {
 
 			await providerInstance.upload(file as File);
 
-			expect(uploadMock.done).toBeCalled();
+			expect(s3SendMock).toBeCalled();
 			expect(file.url).toBeDefined();
 			expect(file.url).toEqual("https://validurl.test/tmp/test.json");
 		});
@@ -73,7 +73,7 @@ describe("Cloudflare R2 AWS Provider", () => {
 
 			await providerInstance.upload(file as File);
 
-			expect(uploadMock.done).toBeCalled();
+			expect(s3SendMock).toBeCalled();
 			expect(file.url).toBeDefined();
 			expect(file.url).toEqual("https://cdn.test/tmp/test/test.json");
 		});
@@ -99,10 +99,31 @@ describe("Cloudflare R2 AWS Provider", () => {
 
 			await providerInstance.upload(file as File);
 
-			expect(uploadMock.done).toBeCalled();
+			expect(s3SendMock).toBeCalled();
 			expect(file.url).toBeDefined();
 			// Should produce correct path structure
 			expect(file.url).toEqual("https://cdn.test/uploads/test.jpg");
+		});
+
+		test("Should throw if public URL is not configured", async () => {
+			const providerInstance = awsProvider.init({
+				params: {
+					Bucket: "test",
+				},
+			});
+
+			const file: Partial<File> = {
+				name: "test",
+				size: 100,
+				url: "",
+				path: "tmp",
+				hash: "test",
+				ext: ".json",
+				mime: "application/json",
+				buffer: Buffer.from(""),
+			};
+
+			await expect(providerInstance.upload(file as File)).rejects.toThrow();
 		});
 	});
 });
