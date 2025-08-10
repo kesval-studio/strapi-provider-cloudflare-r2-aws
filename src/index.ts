@@ -40,6 +40,8 @@ export type InitOptions = {
 	region?: string;
 
 	cloudflarePublicAccessUrl?: string;
+
+	debug?: boolean;
 };
 
 type InitResult = {
@@ -69,12 +71,15 @@ export default {
 		endpoint,
 		cloudflarePublicAccessUrl,
 		region,
+		debug: isDebug,
 	}: InitOptions): InitResult {
 		const S3 = new S3Client({
 			region: region || "auto",
 			endpoint: endpoint,
 			credentials: credentials,
 		});
+
+		const debug = isDebug ? console.debug : () => {};
 
 		if (!cloudflarePublicAccessUrl) {
 			process.emitWarning(
@@ -84,6 +89,8 @@ export default {
 
 		const upload: InitResult["upload"] = async (file, customParams) => {
 			const Key = getFileKey(file);
+
+			debug(`Uploading file with key "${Key}"`, file);
 
 			const command = new Upload({
 				client: S3,
@@ -104,8 +111,10 @@ export default {
 			// Otherwise, use location returned from S3 API if it's not "auto"
 			if (cloudflarePublicAccessUrl) {
 				file.url = `${cloudflarePublicAccessUrl.replace(/\/$/g, "")}/${Key}`;
+				debug(`Uploaded file to "${file.url}"`, file);
 			} else if (uploaded.Location !== "auto") {
 				file.url = uploaded.Location as string;
+				debug(`Uploaded file to "${file.url}"`, file);
 			} else {
 				throw new Error(
 					"Cloudflare S3 API returned no file location and cloudflarePublicAccessUrl is not set. strapi-provider-cloudflare-r2-aws requires cloudflarePublicAccessUrl to upload files larger than 5MB. https://github.com/trieb-work/strapi-provider-cloudflare-r2#provider-configuration",
